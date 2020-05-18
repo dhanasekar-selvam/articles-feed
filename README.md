@@ -8,7 +8,7 @@ Tools and Technologies Used: Laravel-php-framework,html,css,w3.css,javascript.
 
 I Hosted my project in OOOwebhost.com 
 
-HostLink: https://hieronymic-software.000webhostapp.com
+HostLink: https://hieronymic-software.000webhostapp.com
 
 Here is the Steps I follow to deploy my project
 
@@ -32,3 +32,6 @@ Also change the Application debug mode to true ('debug' => env('APP_DEBUG', fals
 step9: After that I also need to change db_name,db_username,db_password,db_host in "Article/config.database.php"and add 'options' => [PDO::ATTR_EMULATE_PREPARES => true] in 'mysql'.
 
 step10:Finally I refreshed my created hosting website (https://hieronymic-software.000webhostapp.com). project runned sucessfully.
+
+sample output:
+
