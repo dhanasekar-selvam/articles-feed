@@ -34,4 +34,4 @@ step9: After that I also need to change db_name,db_username,db_password,db_host 
 step10:Finally I refreshed my created hosting website (https://hieronymic-software.000webhostapp.com). project runned sucessfully.
 
 sample output:
-![images/screenshot]
+![](images/screenshot.png)
