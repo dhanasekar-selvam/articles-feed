@@ -1,10 +1,7 @@
 # articles-feed
 I created aticles-feed web application using Laravel-PHP-framework with mvc pattern. 
-
 In this application user need to register for login to article dashboard. 
-
 After successfull login user can see the articles-feed of all users,He can like, dislike, block the articles. He can create and edit the articles also he can edit his/her profile informations.
-
 so this web application is used for know about the technologies and general knowledge and education purposes.
 
 Tools and Technologies Used: Laravel-php-framework,html,css,w3.css,javascript.
