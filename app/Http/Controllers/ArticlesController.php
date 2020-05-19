@@ -73,7 +73,7 @@ class ArticlesController extends BaseController
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|min:3|max:50',
+            'name' => 'required|min:3',
             'description' => 'required',
             'catagory' => 'required',
 
