@@ -36,23 +36,34 @@ Route::post('user/block', 'UserController@block')->name('user.block');
 
 
 
-//Route::get('dashboard/index', 'DashboardController@index')->name('dashboard.index');
+//Route::get('articles/index', 'articlesController@index')->name('articles.index');
 
-Route::get('dashboard/create', 'DashboardController@create')->name('dashboard.create');
+Route::get('articles/create', 'ArticlesController@create')->name('articles.create');
 
-Route::post('dashboard/store', 'DashboardController@store')->name('dashboard.store');
+Route::post('articles/store', 'ArticlesController@store')->name('articles.store');
 
-
-Route::get('dashboard/list', 'DashboardController@list')->name('dashboard.list');
-
-Route::get('dashboard/view', 'DashboardController@view')->name('dashboard.view');
+Route::post('articles/update', 'ArticlesController@update')->name('articles.update');
 
 
-Route::get('dashboard/edit', 'DashboardController@edit')->name('dashboard.edit');
 
-Route::post('dashboard/like', 'DashboardController@like')->name('dashboard.like');
+Route::get('articles/list', 'ArticlesController@list')->name('articles.list');
 
-Route::get('dashboard/logout', 'DashboardController@logout')->name('dashboard.logout');
+Route::get('articles/view', 'ArticlesController@view')->name('articles.view');
+
+
+Route::get('articles/edit', 'ArticlesController@edit')->name('articles.edit');
+
+Route::get('articles/{id}/edit', 'ArticlesController@editNext')->name('articles.editNext');
+
+Route::get('articles/{id}/delete', 'ArticlesController@delete')->name('articles.delete');
+
+
+
+Route::post('articles/like', 'UserController@like')->name('articles.like');
+
+
+
+Route::get('articles/logout', 'ArticlesController@logout')->name('articles.logout');
 
 
 

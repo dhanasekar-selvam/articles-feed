@@ -7,12 +7,15 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
-use App\User;
+use App\Users;
 use Session;
-use DB;
+use App\post;
+
 use App\liked;
 use App\unliked;
 use App\blocked;
+use Hash;
+use Auth;
 
 class UserController extends BaseController
 {
@@ -21,26 +24,8 @@ class UserController extends BaseController
 
     public function index(Request $request)
     {
-
-        $query = User::query();
-
-        $query->when(isset($request->search), function ($query) use ($request) {
-            return $query->where('name', 'like', '%' . trim($request->search) . '%');
-        });
-
-        $users = $query->paginate(100);
-        $users->appends(request()->query());
-
-        return view('welcome', compact(['users']));
+        return view('welcome');
     }
-
-
-
-
-
-
-
-
     public function login(Request $request)
     {
         $this->validate($request, [
@@ -55,58 +40,66 @@ class UserController extends BaseController
         $request->merge([
             $login_type => $request->input('login')
         ]);
-        if ($login_type == 'email') {
-            $check = DB::table('users')->where('email', $request->login)->pluck('email');
-            if ($check->isEmpty()) {
-                return redirect(route('user.index'))
-                    ->withErrors([
-                        'login' => 'Account not found.',
-                    ]);
-            }
-            $password = DB::table('users')->where('email', $request->login)->pluck('password');
-
-            if ($password[0] == $request->password) {
-                Session::put('username', $request->login);
-                return redirect(route('dashboard.list'));
-            } else {
-                return redirect(route('user.index'))
-                    ->withErrors([
-                        'login' => 'Invalid Username/Password.',
-                    ]);
-            }
-        }
-
-        if ($login_type == 'mobile_number') {
-            $check = DB::table('users')->where('mobile_number', $request->login)->pluck('mobile_number');
-            if ($check->isEmpty()) {
-                return redirect(route('user.index'))
-                    ->withErrors([
-                        'login' => 'Account not found.',
-                    ]);
-            }
-            $password = DB::table('users')->where('mobile_number', $request->login)->pluck('password');
-
-            if ($password[0] == $request->password) {
-                Session::put('username', $request->login);
-                return redirect(route('dashboard.list'));
-            } else {
-                return redirect(route('user.index'))
-                    ->withErrors([
-                        'login' => 'Invalid Username/Password.',
-                    ]);
-            }
-        }
 
 
+        // if ($login_type == 'email') {
+        //     $check = Users::all()->where('email', $request->login)->pluck('email');
+        //     if ($check->isEmpty()) {
+        //         return redirect(route('user.index'))
+        //             ->withErrors([
+        //                 'login' => 'Account not found.',
+        //             ]);
+        //     }
+        //     $password = Users::all()->where('email', $request->login)->pluck('password');
 
-        // if (Auth::attempt($request->only($login_type, 'password'))) {
-        //     return redirect()->intended($this->redirectPath());
+        //     $check = Hash::check($request->password, $password[0]);
+        //     if ($check == "true") {
+        //         Session::put('username', $request->login);
+        //         return redirect(route('articles.list'));
+        //     } else {
+        //         return redirect(route('user.index'))
+        //             ->withErrors([
+        //                 'login' => 'Invalid Username/Password.',
+        //             ]);
+        //     }
         // }
 
-        // return redirect(route('dashboard.list'))
-        //     ->withErrors([
-        //         'login' => 'These credentials do not match our records.',
-        //     ]);
+        // if ($login_type == 'mobile_number') {
+        //     $check = Users::all()->where('mobile_number', $request->login)->pluck('mobile_number');
+
+        //     if ($check->isEmpty()) {
+        //         return redirect(route('user.index'))
+        //             ->withErrors([
+        //                 'login' => 'Account not found.',
+        //             ]);
+        //     }
+        //     $password = Users::all()->where('mobile_number', $request->login)->pluck('password');
+
+
+        //     $check = Hash::check($request->password, $password[0]);
+        //     if ($check == "true") {
+        //         Session::put('username', $request->login);
+        //         return redirect(route('articles.list'));
+        //     } else {
+        //         return redirect(route('user.index'))
+        //             ->withErrors([
+        //                 'login' => 'Invalid Username/Password.',
+        //             ]);
+        //     }
+        // }
+
+
+
+
+        if (Auth::attempt($request->only($login_type, 'password'))) {
+            Session::put('username', $request->login);
+            return redirect(route('articles.list'));
+        }
+
+        return redirect(route('user.index'))
+            ->withErrors([
+                'login' => 'These credentials do not match our records.',
+            ]);
     }
 
 
@@ -116,7 +109,7 @@ class UserController extends BaseController
 
     public function create()
     {
-        $user = new User();
+        $user = new Users();
 
         return view('register.signup', compact(['user']));
     }
@@ -138,11 +131,12 @@ class UserController extends BaseController
 
         if (empty($request->id)) {
             // new recornd
-            $user = new User();
+            $user = new Users();
         } else {
             // editing  existing record
-            $user = User::find($request->id); // fetch a single record from db 
+            $user = Users::find($request->id); // fetch a single record from db 
         }
+        $hashedPassword = Hash::make($request->password);
 
 
         //DB table col name///==/// HTML form input name/////////
@@ -151,7 +145,7 @@ class UserController extends BaseController
         $user->dob = $request->dob;
         $user->mobile_number        = $request->mobile_number;
         $user->email        = $request->email;
-        $user->password        = $request->password;
+        $user->password        = $hashedPassword;
         $user->article  = $request->articles;
 
 
@@ -167,7 +161,7 @@ class UserController extends BaseController
 
 
 
-        $users = User::all()->where('id', $id);
+        $users = Users::all()->where('id', $id);
 
 
 
@@ -177,15 +171,18 @@ class UserController extends BaseController
     public function like(Request $request)
     {
         $id = $request->id;
-        $postt = DB::table('post')->where('id', $id)->first();
+
+        $postt = post::all()->where('id', $id)->first();
+
         $articlename = $postt->name;
-        $again = DB::table('liked')->where('articlename', $articlename)->first();
-        // $idd = $again->id;
+
+        $again = liked::all()->where('articlename', $articlename)->first();
+
         $likedby = Session::get('username');
 
 
         if (empty($again->id)) {
-            // new recornd
+            // new record
             $post = new liked();
             $postname = $postt->name;
         } else {
@@ -203,20 +200,29 @@ class UserController extends BaseController
 
         $post->save();
 
-        Session::put('liked', 'liked');
-        return redirect(route('dashboard.list'));
+        // $user = Auth::user()->email;
+        $unlikedarticle = unliked::all()->where('articlename', $articlename)->first();
+        if (empty($unlikedarticle->id)) {
+            Session::put('liked', 'You liked this post');
+        } else {
+            $del = unliked::find($unlikedarticle->id);
+            $del->delete();
+        }
+        return redirect(route('articles.list'));
     }
     public function dislike(Request $request)
     {
         $id = $request->id;
-        $postt = DB::table('post')->where('id', $id)->first();
+        $postt = post::all()->where('id', $id)->first();
+
         $articlename = $postt->name;
-        $again = DB::table('disliked')->where('articlename', $articlename)->first();
-        // $idd = $again->id;
+
+        $again = unliked::all()->where('articlename', $articlename)->first();
+
         $dislikedby = Session::get('username');
 
         if (empty($again->id)) {
-            // new recornd
+            // new record
             $post = new unliked();
             $postname = $postt->name;
         } else {
@@ -230,22 +236,26 @@ class UserController extends BaseController
         $post->dislikedby         = $dislikedby;
 
         $post->save();
-        Session::put('dislike', 'disliked');
 
+        $likedarticle = liked::all()->where('name', $articlename)->first();
 
-        return redirect(route('dashboard.list'));
+        if (empty($likedarticle->id)) {
+            return redirect(route('articles.list'));
+        } else {
+            $del = liked::find($likedarticle->id);
+            $del->delete();
+        }
+        return redirect(route('articles.list'));
     }
     public function block(Request $request)
     {
         $id = $request->id;
-        $postt = DB::table('post')->where('id', $id)->first();
+        $postt = post::all()->where('id', $id)->first();
         $articlename = $postt->name;
-        $again = DB::table('blocked')->where('articlename', $articlename)->first();
+        $again = blocked::all()->where('articlename', $articlename)->first();
+
         // $idd = $again->id;
         $blockedby = Session::get('username');
-
-
-        // Session::put('blockedarticle', $again->articlename);
 
 
         if (empty($again->id)) {
@@ -266,6 +276,6 @@ class UserController extends BaseController
         Session::put('block', 'blocked');
 
 
-        return redirect(route('dashboard.list'));
+        return redirect(route('articles.list'));
     }
 }

@@ -71,7 +71,7 @@
             @error('password')
             <div class="error w3-red">{{ $message }}</div>
             @enderror
-            <input class="w3-input w3-border w3-round-large w3-mobile" type="text" placeholder="Enter Password" name="password" style="width: 400px;" value="{{$user->password}}" /><br />
+            <input class="w3-input w3-border w3-round-large w3-mobile" type="text" placeholder="Enter Password" name="password" style="width: 400px;" /><br />
             @error('password_confirmation')
             <div class="error w3-red">{{ $message }}</div>
             @enderror
@@ -96,7 +96,7 @@
         </form>
 
         @endforeach
-        <form action="{{route('dashboard.list')}}">
+        <form action="{{route('articles.list')}}">
             <button type="submit" class="w3-button w3-mobile w3-cyan w3-text-white w3-block">cancel</button>
         </form>
     </div>

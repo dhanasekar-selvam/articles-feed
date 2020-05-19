@@ -52,7 +52,7 @@
             <a href="{{route('user.index')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-left w3-hover-indigo">TeachEdison Solutions Private Limited</a>
 
             <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-padding-large w3-hover-blue" title="My Account">
-                <img src="logo.png" style="height: 23px; width: 23px;" />
+                <img src="articles/logo.png" style="height: 23px; width: 23px;" />
             </a> </div>
     </div>
 
