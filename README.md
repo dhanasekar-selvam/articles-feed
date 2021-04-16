@@ -8,7 +8,7 @@ Tools and Technologies Used: Laravel-php-framework,html,css,w3.css,javascript.
 
 I Hosted my project in OOOwebhost.com 
 
-HostLink: https://hieronymic-software.000webhostapp.com
+HostLink: https://articlesfeed.000webhostapp.com/
 
 Here is the Steps I follow to deploy my project
 
